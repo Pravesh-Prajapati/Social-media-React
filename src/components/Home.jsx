@@ -8,15 +8,14 @@ import { postscontext } from '../context/PostContext';
 import { CgProfile } from "react-icons/cg";
 
 const Home = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    let [comment, setcomment] = useState(" ")
 
     let [commentText, setCommentText] = useState({});
 
-    let [like, setlike] = useState(0)
     let navigate = useNavigate()
 
     let { currentuser } = useContext(usercontext)
+    // console.log(currentuser.name);
+    
     if (!currentuser.email) {
         navigate("/signin")
     }
@@ -27,7 +26,8 @@ const Home = () => {
 
     let { likepost } = useContext(postscontext)
     // console.log(allpost)
-    let { commentPost } = useContext(postscontext)
+    let {commentPost} = useContext(postscontext)
+    let {deleteComment} = useContext(postscontext)
 
     let logout = () => {
         console.log("logout");
@@ -52,6 +52,11 @@ const Home = () => {
         commentPost(newcomment, postId)
         setCommentText({})
     };
+    let remove=(pos,commentid)=>{
+        // let alldata={val,pos,i,}
+        let alldata={pos,commentid}
+        deleteComment(alldata)
+    }
 
     return (
         <div className="min-h-screen bg-gray-900">
@@ -151,23 +156,34 @@ const Home = () => {
                                         <button
                                             onClick={() => handleLike(post, i)}
                                             className="flex items-center space-x-2 group" >
-                                            <CiHeart className='text-white fill-red-600 text-xl' />
+                                            {/* <div className='bg-red-500 overflow-hidden'> */}
+                                            <CiHeart className='text-white fill-red-900 rounded-lg  text-xl' />
+                                            {/* </div> */}
+                                            {/* <CiHeart className='text-white fill-red-600 text-xl' /> */}
                                             <span className="text-sm text-gray-500">{post.likeCount}</span>
                                             {/* <span className="text-sm text-white">{like}</span> */}
                                         </button>
                                         <FaRegComment className="h-5 w-5 text-gray-400 group-hover:text-blue-500" />
                                         {/* <span className="text-sm text-gray-500">{post.comments}</span> */}
                                     </div>
-                                    {post.comments.map((val, i) => {
-                                        // console.log(val);
+                                    {post.comments.map((val,pos) => {
+                                        console.log(val.user);  
                                         return (
                                             <>
                                                 <div className='bg-gray-700 ps-3 rounded py-2 mt-4 mb-2'>
-                                                    <div className='flex items-center gap-2'>
-                                                        <CgProfile className='text-white' />
-                                                        <h1 className='text-white font-bold'>{val.user}</h1>
+                                                    <div className='flex justify-between'>
+                                                        <div>
+                                                            <div className='flex items-center gap-2'>
+                                                                <CgProfile className='text-white' />
+                                                                <h1 className='text-white font-bold'>{val.user}</h1>
+                                                            </div>
+                                                            <p className='text-yellow-100'>{val.comment}</p>
+                                                        </div>
+                                                        {currentuser.name==val.user &&
+                                                          <button className='me-4 text-red-500' onClick={()=>{remove(i,pos)}}>Delete</button>
+                                                        }
+                                                        {/* <button className='me-4 text-red-500' onClick={()=>{remove(i,pos)}}>Delete</button> */}
                                                     </div>
-                                                    <p className='text-yellow-100'>{val.comment}</p>
                                                 </div>
                                             </>
                                         )
